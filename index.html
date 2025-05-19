@@ -938,31 +938,33 @@
     </footer>
 
     <script>
-        // Theme Toggle
+                // Theme Toggle - Corrected Version
         const themeToggle = document.querySelector('.theme-toggle');
         const body = document.body;
         const icon = themeToggle.querySelector('i');
-
-        // Check for saved theme preference
-        const currentTheme = localStorage.getItem('theme');
-        if (currentTheme === 'dark') {
-            body.classList.add('dark-mode');
-            icon.classList.remove('fa-moon');
-            icon.classList.add('fa-sun');
+        
+        // Check for saved theme preference or use system preference
+        const savedTheme = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+            enableDarkMode();
         }
-
+        
+        function enableDarkMode() {
+            body.classList.add('dark-mode');
+            localStorage.setItem('theme', 'dark');
+            icon.classList.replace('fa-moon', 'fa-sun');
+        }
+        
+        function disableDarkMode() {
+            body.classList.remove('dark-mode');
+            localStorage.setItem('theme', 'light');
+            icon.classList.replace('fa-sun', 'fa-moon');
+        }
+        
         themeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            
-            if (body.classList.contains('dark-mode')) {
-                localStorage.setItem('theme', 'dark');
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-            } else {
-                localStorage.setItem('theme', 'light');
-                icon.classList.remove('fa-sun');
-                icon.classList.add('fa-moon');
-            }
+            body.classList.contains('dark-mode') ? disableDarkMode() : enableDarkMode();
         });
 
         // Mobile Navigation
@@ -1062,7 +1064,7 @@
         function orbitSkills() {
             angle += 0.002;
             
-            skillBubbles.forEach((bubble, index) {
+            skillBubbles.forEach((bubble, index) => {
                 const individualAngle = angle + (index / skillBubbles.length) * 2 * Math.PI;
                 const x = radius * Math.cos(individualAngle);
                 const y = radius * Math.sin(individualAngle);
@@ -1100,8 +1102,8 @@
             let currentSection = sections[0];
             
             sections.forEach(section => {
-                const sectionTop = section.offset
-				const sectionBottom = sectionTop + section.offsetHeight;
+                const sectionTop = section.offsetTop;
+                const sectionBottom = sectionTop + section.offsetHeight;
                 const scrollPosition = window.scrollY + 100; // Adding offset for navbar
                 
                 if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
